@@ -1,0 +1,4 @@
+---
+const { label, ph, href } = Astro.props;
+---
+<a href={href} class={`tile ${ph}`}><span class="tile__label">{label}</span></a>

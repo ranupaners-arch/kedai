@@ -1,0 +1,38 @@
+---
+import { BRAND_BY_ID, CATEGORIES, money, percentOff, type Product } from "../data/catalog";
+import { STAR_SVG } from "../data/icons";
+import Thumb from "./Thumb.astro";
+interface Props { p: Product; hideBrand?: boolean }
+const { p, hideBrand = false } = Astro.props;
+const b = BRAND_BY_ID[p.brand];
+const off = percentOff(p);
+const hay = `${p.name} ${b.name} ${CATEGORIES[p.cat].label} ${p.type}`.toLowerCase();
+---
+<article
+  class="pcard"
+  data-card
+  data-id={p.id}
+  data-cat={p.cat}
+  data-type={p.type}
+  data-brand={p.brand}
+  data-price={p.price}
+  data-off={off}
+  data-rating={p.rating}
+  data-name={p.name.toLowerCase()}
+  data-hay={hay}
+>
+  <div class="pcard__img">
+    <a href={`/product/${p.id}`} aria-label={p.name}><Thumb ph={p.ph} image={p.image} /></a>
+    {off > 0 && <span class="pcard__off">{off}% off</span>}
+    {p.isNew && off === 0 && <span class="pcard__off pcard__off--new">New</span>}
+    <button class="fav" data-fav={p.id} aria-pressed="false" aria-label="Save to favorites">
+      <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z" /></svg>
+    </button>
+  </div>
+  {!hideBrand && <a class="pcard__brand" href={`/brand/${b.id}`}>{b.name}</a>}
+  <a class="pcard__name" href={`/product/${p.id}`} title={p.name}>{p.name}</a>
+  <div class="pcard__stars" aria-label={`${p.rating} out of 5 stars, ${p.reviews} reviews`}>
+    {[0, 1, 2, 3, 4].map(() => <Fragment set:html={STAR_SVG} />)}<span>({p.reviews.toLocaleString("en-US")})</span>
+  </div>
+  <div class="pcard__price"><strong>{money(p.price)}</strong>{off > 0 && <s>{money(p.compareAt!)}</s>}</div>
+</article>

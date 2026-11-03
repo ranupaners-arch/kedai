@@ -1,0 +1,7 @@
+---
+import { STAR_SVG } from "../data/icons";
+const { rating, count } = Astro.props;
+---
+<div class="stars" aria-label={`${rating} out of 5 stars, ${count} reviews`}>
+  {[0, 1, 2, 3, 4].map(() => <Fragment set:html={STAR_SVG} />)}<span>{rating} ({Number(count).toLocaleString("en-US")})</span>
+</div>

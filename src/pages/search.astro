@@ -1,0 +1,81 @@
+---
+import Base from "../layouts/Base.astro";
+import ProductCard from "../components/ProductCard.astro";
+import BrandCard from "../components/BrandCard.astro";
+import Empty from "../components/Empty.astro";
+import { BRANDS, CATEGORIES, CATEGORY_KEYS, PRODUCTS, SORTS } from "../data/catalog";
+---
+<Base title="Search — Shop" active="/search">
+  <div class="container page" id="search-page">
+    <h1 class="page__title" id="heading">Browse everything</h1>
+    <div id="brandsBlock" hidden>
+      <h2 class="sub">Brands</h2>
+      <div class="grid-4">{BRANDS.map((b) => <BrandCard b={b} />)}</div>
+    </div>
+    <div class="chips" id="chips">
+      <button class="chip" data-cat="" aria-pressed="true">All</button>
+      {CATEGORY_KEYS.map((k) => <button class="chip" data-cat={k} aria-pressed="false">{CATEGORIES[k].label}</button>)}
+    </div>
+    <div class="toolbar">
+      <label class="select"><span class="sr">Sort</span>
+        <select id="sortSel" aria-label="Sort products">{Object.entries(SORTS).map(([k, l]) => <option value={k}>{l}</option>)}</select>
+      </label>
+      <span class="toolbar__count" id="count"></span>
+    </div>
+    <div class="pgrid" id="grid">{PRODUCTS.map((p) => <ProductCard p={p} />)}</div>
+    <div id="none" hidden><Empty title="Nothing found" text="Check the spelling or try a broader term like “linen” or “coffee”." cta="Browse categories" href="/" /></div>
+  </div>
+  <script>
+    import { $, $$, qs } from "../scripts/store";
+
+    const q = (qs("q") ?? "").trim().toLowerCase();
+    const terms = q.split(/\s+/).filter(Boolean);
+    const cards = $$("[data-card]");
+    const brandCards = $$("[data-brand-card]");
+    const state = { cat: "", sort: "featured" };
+
+    $("#heading")!.textContent = q ? `Results for “${qs("q")!.trim()}”` : "Browse everything";
+    document.title = `${q ? `“${qs("q")!.trim()}” — ` : ""}Search — Shop`;
+
+    // relevance: every term must match; name matches weigh more
+    const score = new Map<HTMLElement, number>();
+    for (const c of cards) {
+      let s = 0, ok = true;
+      for (const t of terms) {
+        if (!c.dataset.hay!.includes(t)) { ok = false; break; }
+        s += c.dataset.name!.includes(t) ? 3 : 1;
+      }
+      if (ok) score.set(c, s);
+    }
+    const hits = cards.filter((c) => score.has(c));
+    const brandHits = terms.length ? brandCards.filter((b) => terms.every((t) => b.dataset.hay!.includes(t))) : [];
+    brandCards.forEach((b) => (b.hidden = !brandHits.includes(b)));
+    $("#brandsBlock")!.hidden = brandHits.length === 0;
+
+    // only show category chips for categories that have hits
+    const present = new Set(hits.map((c) => c.dataset.cat));
+    $$("#chips [data-cat]").forEach((c) => { c.hidden = c.dataset.cat !== "" && !present.has(c.dataset.cat); });
+    if (present.size < 2) $("#chips")!.hidden = true;
+
+    const sorters: Record<string, (a: HTMLElement, b: HTMLElement) => number> = {
+      featured: (a, b) => (score.get(b) ?? 0) - (score.get(a) ?? 0),
+      "price-asc": (a, b) => +a.dataset.price! - +b.dataset.price!,
+      "price-desc": (a, b) => +b.dataset.price! - +a.dataset.price!,
+      rating: (a, b) => +b.dataset.rating! - +a.dataset.rating!,
+    };
+    const apply = () => {
+      $$("#chips [data-cat]").forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.cat === state.cat)));
+      const shown = cards.filter((c) => {
+        const ok = score.has(c) && (!state.cat || c.dataset.cat === state.cat);
+        c.hidden = !ok;
+        return ok;
+      });
+      [...shown].sort(sorters[state.sort]).forEach((c, i) => (c.style.order = String(i)));
+      $("#count")!.textContent = `${shown.length} product${shown.length === 1 ? "" : "s"}`;
+      $("#none")!.hidden = shown.length > 0;
+    };
+    $$("#chips [data-cat]").forEach((c) => c.addEventListener("click", () => { state.cat = c.dataset.cat!; apply(); }));
+    $<HTMLSelectElement>("#sortSel")!.addEventListener("change", (e) => { state.sort = (e.target as HTMLSelectElement).value; apply(); });
+    apply();
+  </script>
+</Base>

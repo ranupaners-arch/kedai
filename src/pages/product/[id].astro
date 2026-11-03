@@ -1,0 +1,180 @@
+---
+import Base from "../../layouts/Base.astro";
+import Icon from "../../components/Icon.astro";
+import Stars from "../../components/Stars.astro";
+import Row from "../../components/Row.astro";
+import ProductCard from "../../components/ProductCard.astro";
+import { ICON, STAR_SVG } from "../../data/icons";
+import { BRAND_BY_ID, CATEGORIES, PRODUCTS, PRODUCT_BY_ID, highlightsFor, mulberry, money, percentOff } from "../../data/catalog";
+
+export function getStaticPaths() {
+  return PRODUCTS.map((p) => ({ params: { id: p.id } }));
+}
+const p = PRODUCT_BY_ID[Astro.params.id!];
+const b = BRAND_BY_ID[p.brand];
+const cat = CATEGORIES[p.cat];
+const gallery = [p.ph, ...p.alt];
+const off = percentOff(p);
+const legend = p.cat === "tech" ? "Color" : p.cat === "food" || p.cat === "beauty" ? "Size" : "Option";
+const defaultOpt = cat.options[Math.min(1, cat.options.length - 1)];
+
+// deterministic sample rating breakdown
+const r = mulberry(p.id.length * 131 + p.reviews);
+const raw = [5, 4, 3, 2, 1].map((_, i) => Math.pow(r(), 1 + i * 0.9) * (6 - i));
+const sum = raw.reduce((a, c) => a + c, 0);
+const pct = raw.map((x) => Math.round((x / sum) * 100));
+const related = PRODUCTS.filter((x) => x.brand === b.id && x.id !== p.id);
+---
+<Base title={`${p.name} — Shop`} description={p.desc}>
+  <div class="container page pp" id="pdp" data-id={p.id} data-name={p.name} data-brand={b.id} data-brand-name={b.name}>
+    <div class="pp__grid">
+      <div class="pp__gallery">
+        <div class="pp__sticky">
+          <div class="pp__thumbs">
+            {gallery.map((g, i) => <button class={`pp__thumb ${g}`} data-img={g} aria-label={`Image ${i + 1}`} aria-pressed={i === 0 ? "true" : "false"}></button>)}
+          </div>
+          <div class={`pp__main ${gallery[0]}`} id="main" role="img" aria-label={p.name}></div>
+        </div>
+      </div>
+
+      <div class="pp__info">
+        <div class="pp__brandrow">
+          <a class="pp__brand" href={`/brand/${b.id}`}>
+            <span class={`pp__avatar ${b.ph}`}></span>
+            <span><strong>{b.name}</strong><small>{b.rating} <svg viewBox="0 0 10 10" aria-hidden="true" set:html={'<path d="M5 .5l1.2 2.9 3.1.3-2.4 2 .8 3.1L5 7.2 2.3 8.8l.8-3.1-2.4-2 3.1-.3z"/>'} /> ({b.reviews.toLocaleString("en-US")})</small></span>
+          </a>
+          <button class="pp__more" id="more" aria-label="More actions"><svg viewBox="0 0 24 24" set:html={ICON.dots} /></button>
+        </div>
+
+        <h1 class="pp__title">{p.name}</h1>
+        <div class="pp__ratings">
+          <span class="pp__stars" aria-label={`Average rating: ${p.rating}`}>{[0, 1, 2, 3, 4].map(() => <Fragment set:html={STAR_SVG} />)}</span>
+          <a href="#reviews" data-open="reviews">{p.reviews.toLocaleString("en-US")} ratings</a>
+        </div>
+
+        <div class="pp__price">
+          <strong>{money(p.price)}</strong>
+          {off > 0 && <s aria-label={`Original price ${money(p.compareAt!)}`}>{money(p.compareAt!)}</s>}
+          {off > 0 && <span class="pp__off">{off}% off</span>}
+        </div>
+
+        <fieldset class="pp__opts"><legend>{legend}</legend>
+          <div>{cat.options.map((o) => <button type="button" class="chip" data-opt={o} aria-pressed={o === defaultOpt ? "true" : "false"}>{o}</button>)}</div>
+        </fieldset>
+
+        <div class="pp__qty">
+          <p>Quantity</p>
+          <div class="pp__stepper">
+            <button aria-label="Decrease item quantity" data-q="-1" disabled><Icon name="minus" /></button>
+            <output id="qty" aria-live="polite">1</output>
+            <button aria-label="Increase item quantity" data-q="1"><Icon name="plus" /></button>
+          </div>
+        </div>
+
+        <div class="pp__buy">
+          <button class="pp__add" id="addBtn" aria-label="Add to cart">Add to cart</button>
+          <button class="pp__now" id="buyNow">Buy now</button>
+        </div>
+        <div class="pp__aux">
+          <button class="pp__ghost" data-fav={p.id} aria-pressed="false"><svg viewBox="0 0 24 24" set:html={ICON.heart} /><span id="saveLabel">Save</span></button>
+          <button class="pp__ghost" id="share"><svg viewBox="0 0 24 24" set:html={ICON.share} /><span>Share</span></button>
+        </div>
+
+        <details class="pp__acc" open>
+          <summary>Description <Icon name="chevron" /></summary>
+          <div class="pp__text pp__text--clamp" id="desc">
+            <p class="pp__label">DESCRIPTION</p>
+            <p>{p.desc}</p>
+            <p class="pp__label">HIGHLIGHTS</p>
+            <ul>{highlightsFor(p).map((h) => <li>{h}</li>)}</ul>
+            <p class="pp__label">ABOUT {b.name.toUpperCase()}</p>
+            <p>{b.tagline}</p>
+          </div>
+          <button class="pp__pill" id="readMore">Read more</button>
+        </details>
+
+        <details class="pp__acc" id="reviews" open>
+          <summary>Reviews <span class="pp__sum">{p.rating} ({p.reviews.toLocaleString("en-US")})</span> <Icon name="chevron" /></summary>
+          <div class="pp__rev">
+            <div><div class="pp__big">{p.rating}</div><Stars rating={p.rating} count={p.reviews} /></div>
+            <div class="bars">{pct.map((x, i) => <div class="bar"><span>{5 - i}</span><i><b style={`width:${x}%`}></b></i></div>)}</div>
+          </div>
+          <p class="muted pp__note">Rating figures are sample data for this demo.</p>
+        </details>
+
+        <details class="pp__acc">
+          <summary>Delivery &amp; Returns <Icon name="chevron" /></summary>
+          <div class="pp__text">
+            <p>Free shipping on orders over $75. Ships in 1–2 business days.</p>
+            <a class="pp__pill pp__pill--link" href="/help#returns">Return policy</a>
+            <a class="pp__pill pp__pill--link" href={`/brand/${b.id}`}>Visit {b.name}</a>
+          </div>
+        </details>
+
+        <div class="pp__store">
+          <span class={`pp__avatar pp__avatar--lg ${b.ph}`}></span>
+          <span><strong>{b.name}</strong><small>{b.rating} ★ ({b.reviews.toLocaleString("en-US")})</small></span>
+          <button class="pp__follow" id="follow" aria-pressed="false">Follow</button>
+        </div>
+      </div>
+    </div>
+
+    <section class="section"><h2 class="sub">More from {b.name}</h2>
+      <Row>{related.map((x) => <ProductCard p={x} />)}</Row>
+    </section>
+  </div>
+
+  <script>
+    import { $, $$, cart, favs, follows, toast } from "../../scripts/store";
+    const root = $("#pdp")!, id = root.dataset.id!, brandId = root.dataset.brand!, brandName = root.dataset.brandName!;
+    let opt = $("[data-opt][aria-pressed='true']")?.dataset.opt, qty = 1, addTimer: number | undefined;
+    const qtyEl = $("#qty")!, main = $("#main")!, add = $("#addBtn")!, dec = $<HTMLButtonElement>("[data-q='-1']")!;
+
+    const paintQty = () => { qtyEl.textContent = String(qty); dec.disabled = qty <= 1; };
+    const paintSave = () => { $("#saveLabel")!.textContent = favs.has(id) ? "Saved" : "Save"; };
+    const paintFollow = () => { const on = follows.has(brandId); const f = $("#follow")!; f.textContent = on ? "Following" : "Follow"; f.setAttribute("aria-pressed", String(on)); };
+    paintSave(); paintFollow();
+    document.addEventListener("shop:change", () => { paintSave(); paintFollow(); });
+
+    const ensureAdded = () => cart.add(id, opt, qty);
+
+    root.addEventListener("click", async (e) => {
+      const t = e.target as HTMLElement;
+
+      const im = t.closest<HTMLElement>("[data-img]");
+      if (im) { main.className = `pp__main ${im.dataset.img}`; $$("[data-img]").forEach((x) => x.setAttribute("aria-pressed", String(x === im))); }
+
+      const o = t.closest<HTMLElement>("[data-opt]");
+      if (o) { opt = o.dataset.opt; $$("[data-opt]").forEach((x) => x.setAttribute("aria-pressed", String(x === o))); }
+
+      const q = t.closest<HTMLElement>("[data-q]");
+      if (q) { qty = Math.max(1, Math.min(99, qty + +q.dataset.q!)); paintQty(); }
+
+      if (t.closest("#addBtn")) {
+        ensureAdded();
+        add.textContent = "Added to cart"; add.classList.add("done");
+        clearTimeout(addTimer); addTimer = window.setTimeout(() => { add.textContent = "Add to cart"; add.classList.remove("done"); }, 2000);
+        toast(`Added ${qty} to cart`);
+      }
+      if (t.closest("#buyNow")) { ensureAdded(); location.href = "/checkout"; }
+
+      if (t.closest("#share")) {
+        const data = { title: root.dataset.name!, url: location.href };
+        try {
+          if (navigator.share) await navigator.share(data);
+          else { await navigator.clipboard.writeText(location.href); toast("Link copied"); }
+        } catch { /* user cancelled */ }
+      }
+      if (t.closest("#more")) { try { await navigator.clipboard.writeText(location.href); toast("Link copied"); } catch { toast("Press ⌘/Ctrl+L to copy the link"); } }
+
+      if (t.closest("#readMore")) {
+        const d = $("#desc")!, on = d.classList.toggle("pp__text--clamp");
+        $("#readMore")!.textContent = on ? "Read more" : "Show less";
+      }
+      if (t.closest("#follow")) { toast(follows.toggle(brandId) ? `Following ${brandName}` : `Unfollowed ${brandName}`); }
+      const open = t.closest<HTMLElement>("[data-open]");
+      if (open) { e.preventDefault(); const d = document.getElementById(open.dataset.open!) as HTMLDetailsElement; d.open = true; d.scrollIntoView({ behavior: "smooth" }); }
+    });
+    paintQty();
+  </script>
+</Base>

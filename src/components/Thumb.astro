@@ -1,0 +1,5 @@
+---
+// Product/brand image stand-in. Pass `image` (e.g. "/images/foo.jpg") to use a real photo.
+const { ph, image, class: cls = "" } = Astro.props;
+---
+<div class={`thumb ${image ? "" : ph} ${cls}`} style={image ? `background:url('${image}') center/cover` : undefined} />

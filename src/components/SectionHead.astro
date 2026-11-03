@@ -1,0 +1,8 @@
+---
+import Icon from "./Icon.astro";
+const { title, href } = Astro.props;
+---
+<div class="section__head">
+  <h2 class="section__title">{href ? <a href={href}>{title}</a> : title}</h2>
+  <Icon name="chevron" />
+</div>

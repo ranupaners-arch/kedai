@@ -1,0 +1,78 @@
+---
+import Base from "../../layouts/Base.astro";
+import ProductCard from "../../components/ProductCard.astro";
+import Empty from "../../components/Empty.astro";
+import { ICON } from "../../data/icons";
+import { BRANDS, CATEGORIES, CATEGORY_KEYS, PRODUCTS, SORTS } from "../../data/catalog";
+
+export function getStaticPaths() {
+  return CATEGORY_KEYS.map((c) => ({ params: { c } }));
+}
+const key = Astro.params.c as keyof typeof CATEGORIES;
+const cat = CATEGORIES[key];
+const products = PRODUCTS.filter((p) => p.cat === key);
+const brands = BRANDS.filter((b) => b.cat === key);
+
+const typePh = Object.fromEntries(cat.types.map(([t]) => [t, products.find((p) => p.type === t)!.ph]));
+const topRated = [...products].sort((a, b) => b.rating - a.rating || b.reviews - a.reviews).slice(0, 4);
+const justIn = [...products].sort((a, b) => Number(b.isNew) - Number(a.isNew) || a.price - b.price).slice(0, 4);
+const spotlight = brands[0], trending = cat.types[1] ?? cat.types[0], style = cat.types[2] ?? cat.types[0];
+const promos = [
+  { title: `Brand spotlight: ${spotlight.name}`, sub: spotlight.tagline, ph: spotlight.ph, href: `/brand/${spotlight.id}` },
+  { title: `Trending now: ${trending[0].toLowerCase()}`, sub: `The ${trending[0].toLowerCase()} our shoppers keep saving.`, ph: typePh[trending[0]], href: `/category/${key}?t=${encodeURIComponent(trending[0])}` },
+  { title: `How to style: ${style[0].toLowerCase()}`, sub: `Easy ways to wear and use ${style[0].toLowerCase()}.`, ph: typePh[style[0]], href: `/category/${key}?t=${encodeURIComponent(style[0])}` },
+];
+const arrow = ICON.arrow;
+---
+<Base title={`${cat.label} — Shop`} active="/brands">
+  <div class="container page" id="category" data-cat={key}>
+    <h1 class="page__title">{cat.label}</h1>
+    <nav class="crumbs"><a href="/brands">All categories</a> <svg class="ic" viewBox="0 0 24 24" set:html={ICON.chevron} /> <span>{cat.label}</span></nav>
+
+    <div class="chips" id="chips">
+      <button class="chip" data-type="" aria-pressed="true">All</button>
+      {cat.types.map(([t]) => <button class="chip" data-type={t} aria-pressed="false"><span class={`chip__dot ${typePh[t]}`}></span>{t}</button>)}
+    </div>
+
+    <div class="promo3">
+      {promos.map((c) => (
+        <a class={`promo3__card ${c.ph}`} href={c.href}>
+          <strong>{c.title}</strong><small>{c.sub}</small>
+          <span class="promo3__go"><svg viewBox="0 0 24 24" set:html={arrow} /></span>
+        </a>
+      ))}
+    </div>
+
+    <div class="mods">
+      <section class="mod">
+        <div class="mod__head"><h2>Favorites for a reason</h2><a class="mod__go" href={`/category/${key}`} aria-label="See all"><svg viewBox="0 0 24 24" set:html={arrow} /></a></div>
+        <div class="mod__row">{topRated.map((p) => <ProductCard p={p} />)}</div>
+      </section>
+      <section class="mod">
+        <div class="mod__head"><h2>Just dropped</h2><a class="mod__go" href={`/category/${key}`} aria-label="See all"><svg viewBox="0 0 24 24" set:html={arrow} /></a></div>
+        <div class="mod__row">{justIn.map((p) => <ProductCard p={p} />)}</div>
+      </section>
+    </div>
+
+    <h2 class="sub" style="margin-bottom:16px">All {cat.label.toLowerCase()}</h2>
+    <div class="toolbar">
+      <label class="select"><span class="sr">Brand</span>
+        <select id="brandSel" aria-label="Filter by brand"><option value="">All brands</option>{brands.map((b) => <option value={b.id}>{b.name}</option>)}</select>
+      </label>
+      <button class="chip" id="saleBtn" aria-pressed="false">On sale</button>
+      <label class="select"><span class="sr">Price</span>
+        <select id="priceSel" aria-label="Filter by price"><option value="">Price</option><option value="0-50">Under $50</option><option value="50-100">$50 – $100</option><option value="100-9999">Over $100</option></select>
+      </label>
+      <label class="select"><span class="sr">Sort</span>
+        <select id="sortSel" aria-label="Sort products">{Object.entries(SORTS).map(([k, l]) => <option value={k}>{l}</option>)}</select>
+      </label>
+      <span class="toolbar__count" id="count">{products.length} products</span>
+    </div>
+    <div class="pgrid" id="grid">{products.map((p) => <ProductCard p={p} />)}</div>
+    <div id="none" hidden><Empty title="No matches" text="Try a different brand, price, or type." /></div>
+  </div>
+  <script>
+    import { initGrid } from "../../scripts/grid";
+    initGrid({ typeFromUrl: true });
+  </script>
+</Base>

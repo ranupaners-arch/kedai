@@ -1,0 +1,42 @@
+---
+import Base from "../layouts/Base.astro";
+
+const faq = [
+  ["shipping", "How much is shipping?", "Orders over $75 (after discounts) ship free. Smaller orders are a flat $6."],
+  ["returns", "What is the return policy?", "You can return unworn or unused items within 30 days of delivery. Start a return from your Orders page."],
+  ["tracking", "How do I track an order?", "Open Orders and expand an order to see its progress from Processing to Delivered."],
+  ["promo", "Do you have promo codes?", "Try SHOP10 in the cart for 10% off."],
+  ["privacy", "What about my data?", "This demo keeps your profile, cart, favorites and orders only in your browser's local storage. Nothing is sent to a server, and you can erase it from Account → Clear all local data."],
+  ["app", "Is there a mobile app?", "The banner is a design placeholder — this demo has no mobile app."],
+];
+---
+<Base title="Help — Shop" active="/help">
+  <div class="container page page--narrow">
+    <h1 class="page__title">Help center</h1>
+    <div class="faq">
+      {faq.map(([id, q, a]) => <details id={id}><summary>{q}</summary><p>{a}</p></details>)}
+    </div>
+    <h2 class="sub">Contact us</h2>
+    <form id="contact" class="form-card" novalidate>
+      <label class="field"><span>Email</span><input name="email" type="email" required /></label>
+      <label class="field"><span>Message</span><textarea name="msg" rows="4" required></textarea></label>
+      <p class="error" id="err" role="alert" hidden></p>
+      <button class="btn-primary" type="submit">Send</button>
+    </form>
+  </div>
+  <script>
+    import { $, toast, validEmail } from "../scripts/store";
+    const open = () => {
+      const d = location.hash ? document.querySelector<HTMLDetailsElement>(location.hash) : null;
+      if (d?.tagName === "DETAILS") { d.open = true; d.scrollIntoView(); }
+    };
+    open();
+    addEventListener("hashchange", open);
+    $<HTMLFormElement>("#contact")!.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const f = e.target as HTMLFormElement, fd = Object.fromEntries(new FormData(f)) as Record<string, string>, err = $("#err")!;
+      if (!validEmail(fd.email) || !fd.msg.trim()) { err.hidden = false; err.textContent = "Add a valid email and a message."; return; }
+      f.reset(); err.hidden = true; toast("Thanks — this demo doesn't send messages anywhere.");
+    });
+  </script>
+</Base>

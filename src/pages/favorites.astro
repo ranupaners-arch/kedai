@@ -1,0 +1,32 @@
+---
+import Base from "../layouts/Base.astro";
+import ProductCard from "../components/ProductCard.astro";
+import BrandCard from "../components/BrandCard.astro";
+import Empty from "../components/Empty.astro";
+import { BRANDS, PRODUCTS } from "../data/catalog";
+---
+<Base title="Favorites — Shop" active="/favorites">
+  <div class="container page">
+    <h1 class="page__title">Favorites</h1>
+    <div class="pgrid" id="grid">{PRODUCTS.map((p) => <ProductCard p={p} />)}</div>
+    <div id="none" hidden><Empty title="No favorites yet" text="Tap the heart on any product to save it here." /></div>
+    <section class="section" id="followedBlock" hidden>
+      <h2 class="sub">Brands you follow</h2>
+      <div class="grid-4">{BRANDS.map((b) => <BrandCard b={b} />)}</div>
+    </section>
+  </div>
+  <script>
+    import { $, $$, favs, follows } from "../scripts/store";
+    const render = () => {
+      const f = favs.list(), fo = follows.list();
+      let n = 0;
+      $$("[data-card]").forEach((c) => { const on = f.includes(c.dataset.id!); c.hidden = !on; if (on) c.style.order = String(-f.indexOf(c.dataset.id!)); n += +on; });
+      $("#none")!.hidden = n > 0;
+      let m = 0;
+      $$("[data-brand-card]").forEach((b) => { const on = fo.includes(b.dataset.id!); b.hidden = !on; m += +on; });
+      $("#followedBlock")!.hidden = m === 0;
+    };
+    render();
+    document.addEventListener("shop:change", render);
+  </script>
+</Base>

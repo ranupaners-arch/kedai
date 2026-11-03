@@ -1,0 +1,14 @@
+---
+import { PRODUCTS, CATEGORIES, type Brand } from "../data/catalog";
+import Stars from "./Stars.astro";
+import Thumb from "./Thumb.astro";
+interface Props { b: Brand }
+const { b } = Astro.props;
+const items = PRODUCTS.filter((p) => p.brand === b.id).slice(0, 4);
+---
+<a href={`/brand/${b.id}`} class="brand-card" data-brand-card data-id={b.id} data-hay={`${b.name} ${CATEGORIES[b.cat].label}`.toLowerCase()}>
+  <Thumb ph={b.ph} image={b.image} />
+  <div class="brand-card__name">{b.name}</div>
+  <Stars rating={b.rating} count={b.reviews} />
+  <div class="strip">{items.map((p) => <span class={p.ph} />)}</div>
+</a>

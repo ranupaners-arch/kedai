@@ -1,0 +1,146 @@
+---
+import Base from "../layouts/Base.astro";
+import Stars from "../components/Stars.astro";
+import Tile from "../components/Tile.astro";
+import SectionHead from "../components/SectionHead.astro";
+import Row from "../components/Row.astro";
+import BrandCard from "../components/BrandCard.astro";
+import ProductCard from "../components/ProductCard.astro";
+import Icon from "../components/Icon.astro";
+import SearchForm from "../components/SearchForm.astro";
+import Thumb from "../components/Thumb.astro";
+import { ICON } from "../data/icons";
+import { BRANDS, BRAND_BY_ID, CATEGORIES, CATEGORY_KEYS, PRODUCTS } from "../data/catalog";
+
+const slides = [
+  { ph: "ph-terra", title: "The Linen Edit", text: "Light layers and easy silhouettes for warmer days.", cta: "Shop women", href: "/category/women" },
+  { ph: "ph-olive", title: "Coffee, Slowly", text: "Single-origin beans and tea worth a second cup.", cta: "Shop food & drink", href: "/category/food" },
+  { ph: "ph-slate", title: "Built for Weather", text: "Outerwear and boots from brands that last.", cta: "Shop men", href: "/category/men" },
+];
+const trending = ["roast-society", "terra-co", "northfield", "oat-home", "aurelia", "orbit-audio", "little-fern"].map((id) => BRAND_BY_ID[id]);
+const light = new Set(["ph-ivory", "ph-sand", "ph-tan"]);
+const tilePh = ["ph-terra", "ph-ivory", "ph-clay", "ph-slate"];
+const homeBrands = [
+  ...BRANDS.filter((b) => b.cat === "home"), ...BRANDS.filter((b) => b.cat === "women").slice(0, 2), ...BRANDS.filter((b) => b.cat === "food").slice(0, 1),
+];
+const hero = BRAND_BY_ID.northfield;
+
+// Half-circle ("dome") of cards around the search box. Each card sits on an ellipse centred on the search.
+// Angles run 168° (left) → 90° (top centre) → 12° (right), so the end cards stay clear of the search row below.
+// Cards alternate between an outer and an inner ring so neighbours never collide. The radii themselves live in CSS
+// variables (--rx/--ry/--cy), which lets phones use a tighter arc without recomputing anything in JS.
+const arcBrands = ["terra-co", "northfield", "aurelia", "oat-home", "orbit-audio", "little-fern", "roast-society", "willow-lane", "kiln-co"].map((id) => BRAND_BY_ID[id]);
+const arc = arcBrands.map((b, i) => {
+  const deg = 168 - (i * 156) / (arcBrands.length - 1);
+  const rad = (deg * Math.PI) / 180;
+  return {
+    b, i,
+    c: +Math.cos(rad).toFixed(4),
+    s: +Math.sin(rad).toFixed(4),
+    rot: +((90 - deg) * 0.22).toFixed(1),    // gentle outward fan
+    outer: i % 2 === 0,
+  };
+});
+const fresh = PRODUCTS.filter((p) => p.isNew).slice(0, 10);
+---
+<Base title="Shop — Discover products you'll love" active="/">
+  <link slot="head" rel="preload" as="image" href="/images/hero-bg.jpg" fetchpriority="high" media="(min-width: 641px)" />
+  <!-- First screen: the search dome + category links fill the viewport; the carousel starts below the fold -->
+  <div class="firstscreen">
+  <section class="arc" aria-label="Search">
+    <div class="arc__stage">
+      {arc.map(({ b, c, s, rot, outer }) => (
+        <a href={`/brand/${b.id}`} class:list={["arc__card", outer ? "arc__card--outer" : "arc__card--inner"]} style={`--c:${c};--s:${s};--rot:${rot}deg`} aria-label={b.name}>
+          <Thumb ph={b.ph} image={b.image} /><span>{b.name}</span>
+        </a>
+      ))}
+      <div class="arc__search"><SearchForm /></div>
+    </div>
+  </section>
+
+  <div class="qlinks">
+    {CATEGORY_KEYS.map((k) => (
+      <a class="qlink" href={`/category/${k}`}>
+        <span class="qlink__dot" style={`background:${CATEGORIES[k].color}`}><svg viewBox="0 0 24 24" set:html={ICON[CATEGORIES[k].icon]} /></span>{CATEGORIES[k].label}
+      </a>
+    ))}
+    <a class="qlink qlink--all" href="/brands" aria-label="Explore all brands"><svg viewBox="0 0 24 24" set:html={ICON.grid} /></a>
+  </div>
+
+  </div>
+
+  <div class="home">
+    <section class="hero2" id="hero" aria-roledescription="carousel" aria-label="Featured shops">
+      {slides.map((s, i) => (
+        <div class={`slide ${s.ph} ${i === 0 ? "on" : ""}`} aria-hidden={i === 0 ? "false" : "true"}>
+          <h2>{s.title}</h2><p>{s.text}</p>
+          <a class="slide__cta" href={s.href}>{s.cta}</a>
+        </div>
+      ))}
+      <div class="dots" role="group" aria-label="Choose a featured shop">
+        {slides.map((_, i) => <button aria-label={`Go to slide ${i + 1}`} aria-current={i === 0 ? "true" : "false"} data-slide={i}></button>)}
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:40px">
+      <SectionHead title="Trending stores" href="/brands" />
+      <div class="rail-scroll stores">
+        <div class="row">
+          {trending.map((b) => (
+            <a href={`/brand/${b.id}`} class:list={["store-card", b.ph, { light: light.has(b.ph) }]}>
+              <strong>{b.name}</strong><Stars rating={b.rating} count={b.reviews} />
+            </a>
+          ))}
+        </div>
+        <button class="arrow" aria-label="Scroll right" data-scroll><Icon name="chevron" /></button>
+      </div>
+    </section>
+
+    <section class="section">
+      <SectionHead title="Women" href="/category/women" />
+      <div class="grid-4">{CATEGORIES.women.types.map(([t], i) => <Tile label={t} ph={tilePh[i]} href={`/category/women?t=${encodeURIComponent(t)}`} />)}</div>
+    </section>
+
+    <section class="section">
+      <SectionHead title="Men" href="/category/men" />
+      <div class="split">
+        <a href={`/brand/${hero.id}`} class="split__hero ph-slate"><h3>{hero.name}</h3><Stars rating={hero.rating} count={hero.reviews} /></a>
+        <div class="split__grid">{CATEGORIES.men.types.map(([t], i) => <Tile label={t} ph={["ph-olive", "ph-ash", "ph-sand", "ph-black"][i]} href={`/category/men?t=${encodeURIComponent(t)}`} />)}</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <SectionHead title="Beauty" href="/category/beauty" />
+      <div class="grid-4">{CATEGORIES.beauty.types.map(([t], i) => <Tile label={t} ph={["ph-rose", "ph-sand", "ph-terra", "ph-sage"][i]} href={`/category/beauty?t=${encodeURIComponent(t)}`} />)}</div>
+    </section>
+
+    <section class="section">
+      <SectionHead title="Home" href="/category/home" />
+      <Row>{homeBrands.map((b) => <BrandCard b={b} />)}</Row>
+    </section>
+
+    <section class="section">
+      <SectionHead title="Baby & Toddler" href="/category/baby" />
+      <div class="grid-4">{CATEGORIES.baby.types.map(([t], i) => <Tile label={t} ph={["ph-ivory", "ph-sage", "ph-rose", "ph-sand"][i]} href={`/category/baby?t=${encodeURIComponent(t)}`} />)}</div>
+    </section>
+
+    <section class="section">
+      <SectionHead title="New arrivals" href="/search" />
+      <Row>{fresh.map((p) => <ProductCard p={p} />)}</Row>
+    </section>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll<HTMLElement>(".slide")];
+    const dots = [...document.querySelectorAll<HTMLElement>("[data-slide]")];
+    let i = 0, timer: number | undefined;
+    const show = (n: number) => {
+      i = (n + slides.length) % slides.length;
+      slides.forEach((s, k) => { s.classList.toggle("on", k === i); s.setAttribute("aria-hidden", String(k !== i)); });
+      dots.forEach((d, k) => d.setAttribute("aria-current", String(k === i)));
+    };
+    const play = () => { clearInterval(timer); timer = window.setInterval(() => show(i + 1), 6000); };
+    dots.forEach((d) => d.addEventListener("click", () => { show(+d.dataset.slide!); play(); }));
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) play();
+  </script>
+</Base>

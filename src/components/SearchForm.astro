@@ -1,0 +1,8 @@
+---
+import { ICON } from "../data/icons";
+---
+<form class="search" data-search role="search" action="/search" method="get">
+  <svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true" set:html={ICON.search} />
+  <input type="search" name="q" placeholder="What are you shopping for today?" aria-label="Search products" />
+  <button class="sr" type="submit">Search</button>
+</form>

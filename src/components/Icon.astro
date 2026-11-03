@@ -1,0 +1,5 @@
+---
+import { ICON } from "../data/icons";
+const { name, class: cls = "" } = Astro.props;
+---
+<svg class={`ic ${cls}`} viewBox="0 0 24 24" aria-hidden="true" set:html={ICON[name] ?? ""} />

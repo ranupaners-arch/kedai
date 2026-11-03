@@ -1,0 +1,85 @@
+---
+import "@fontsource-variable/inter";
+import "../styles/global.css";
+import { ICON } from "../data/icons";
+import { CATEGORIES, CATEGORY_KEYS } from "../data/catalog";
+import SearchForm from "../components/SearchForm.astro";
+
+interface Props { title: string; active?: string; description?: string; bare?: boolean }
+const { title, active = "", description = "Browse products from your favorite brands.", bare = false } = Astro.props;
+
+const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "";
+const nav = [["home", "Home", "/"], ["grid", "Explore", "/brands"], ["bag", "Cart", "/cart"], ["orders", "Orders", "/orders"]];
+const userIcon = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8">${ICON.user}</svg>`;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <slot name="head" />
+  </head>
+  <body>
+    {bare ? (
+      <slot />
+    ) : (
+      <>
+        <div class="rail-group" data-dock={isHome ? "bottom" : undefined}>
+          <nav class="rail" aria-label="Primary">
+            {nav.map(([ic, label, href]) => (
+              <a class="rail__item" href={href} aria-label={label} aria-current={active === href ? "page" : undefined}>
+                <svg viewBox="0 0 24 24" set:html={ICON[ic]} />
+              </a>
+            ))}
+          </nav>
+          <nav class="rail rail--bottom" aria-label="Account">
+            <a class="rail__item" href="/favorites" aria-label="Favorites" aria-current={active === "/favorites" ? "page" : undefined}>
+              <svg viewBox="0 0 24 24" set:html={ICON.heart} />
+            </a>
+            <a class="rail__signin" id="avatar" href="/login" aria-label="Account" aria-current={active === "/account" ? "page" : undefined} data-icon={userIcon}>
+              <span class="rail__signin-icon" id="avatarIcon" set:html={userIcon} /><span id="avatarLabel">Sign in</span>
+            </a>
+          </nav>
+        </div>
+
+        <div class={`main ${isHome ? "" : "main--inner"}`}>
+          <header class="topbar topbar--slim">
+            <a class="logo" href="/" aria-label="Shop home">shop<i>.</i></a>
+          </header>
+          <slot />
+          <footer class="footer"><div class="container">
+            <div class="footer__cols">
+              <div><div class="footer__brand">shop<i>.</i></div><p class="footer__tag">Shopping designed around you.</p></div>
+              <div><h4>Discover</h4><ul><li><a href="/brands">Brands</a></li>{CATEGORY_KEYS.slice(0, 3).map((k) => <li><a href={`/category/${k}`}>{CATEGORIES[k].label}</a></li>)}</ul></div>
+              <div><h4>Account</h4><ul><li><a href="/account">Profile</a></li><li><a href="/orders">Orders</a></li><li><a href="/favorites">Favorites</a></li></ul></div>
+              <div><h4>Support</h4><ul><li><a href="/help">Help center</a></li><li><a href="/help#returns">Returns</a></li><li><a href="/help#privacy">Privacy</a></li></ul></div>
+            </div>
+            <p class="footer__legal">Demo storefront — no real payments or orders are processed. Catalog and brands are fictional.</p>
+          </div></footer>
+        </div>
+
+        {!isHome && <div class="fsearch"><SearchForm /></div>}
+
+        <aside class="dl-card" id="dl" hidden>
+          <a class="dl-card__body" href="/help#app">
+            <span class="dl-card__icon" aria-hidden="true">S</span>
+            <span><strong>Download the app</strong><small>Placeholder promo — this demo has no mobile app.</small></span>
+          </a>
+          <button class="dl-card__close" id="dlClose" aria-label="Dismiss app download prompt"><svg viewBox="0 0 24 24" set:html={ICON.close} /></button>
+        </aside>
+
+        <aside class="cookie" id="cookie" aria-label="Cookie consent" hidden>
+          <p>We use cookies to personalize your experience. See our <a href="/help#privacy">privacy notes</a>.</p>
+          <div class="cookie__actions"><button class="btn" data-cookie="accept">Accept all</button><button class="btn" data-cookie="reject">Reject</button></div>
+        </aside>
+      </>
+    )}
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+      import "../scripts/shell";
+    </script>
+  </body>
+</html>

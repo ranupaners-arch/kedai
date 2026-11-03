@@ -1,0 +1,53 @@
+---
+import Base from "../layouts/Base.astro";
+import Stars from "../components/Stars.astro";
+import { BRAND_BY_ID } from "../data/catalog";
+
+const cards = [["terra-co", 14, 22, -7], ["northfield", 38, 50, 5], ["oat-home", 12, 60, -3]] as const;
+---
+<Base title="Log in to your account | Shop" bare>
+  <main class="login">
+    <aside class="login__art" aria-hidden="true">
+      <span class="login__tag">shop.</span>
+      {cards.map(([id, x, y, r]) => {
+        const b = BRAND_BY_ID[id];
+        return (
+          <div class="login__card" style={`left:${x}%;top:${y}%;transform:rotate(${r}deg)`}>
+            <div class={`thumb ${b.ph}`}></div><div class="float-card__name">{b.name}</div><Stars rating={b.rating} count={b.reviews} />
+          </div>
+        );
+      })}
+    </aside>
+
+    <section class="login__panel">
+      <form class="login__form" id="loginForm" novalidate>
+        <a class="login__logo" href="/" aria-label="Back to the shop">shop<i>.</i></a>
+        <div class="login__head">
+          <h1 id="title">Sign in to Shop</h1>
+          <p id="sub">Or create an account</p>
+        </div>
+
+        <label class="login__field" id="emailField">
+          <span class="sr">Email</span>
+          <input name="email" type="email" inputmode="email" autocomplete="email" placeholder="Enter your email" required />
+        </label>
+        <label class="login__field" id="nameField" hidden>
+          <span class="sr">Your name</span>
+          <input name="name" autocomplete="name" placeholder="Your name" />
+        </label>
+
+        <p class="error" id="err" role="alert" hidden></p>
+        <button class="login__cta" type="submit" id="cta">Continue</button>
+        <button class="login__back" type="button" id="back" hidden>Use a different email</button>
+
+        <p class="login__legal">
+          Demo only: your profile is saved in this browser. No email is sent and there is no password.
+          By continuing you agree to the <a href="/help#privacy">terms and privacy notes</a>.
+        </p>
+      </form>
+    </section>
+  </main>
+  <script>
+    import "../scripts/login";
+  </script>
+</Base>

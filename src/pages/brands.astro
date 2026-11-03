@@ -1,0 +1,17 @@
+---
+import Base from "../layouts/Base.astro";
+import SectionHead from "../components/SectionHead.astro";
+import BrandCard from "../components/BrandCard.astro";
+import { BRANDS, CATEGORIES, CATEGORY_KEYS } from "../data/catalog";
+---
+<Base title="Brands — Shop" active="/brands">
+  <div class="container page">
+    <h1 class="page__title">Brands</h1>
+    {CATEGORY_KEYS.map((k) => (
+      <section class="section section--tight">
+        <SectionHead title={CATEGORIES[k].label} href={`/category/${k}`} />
+        <div class="grid-4">{BRANDS.filter((b) => b.cat === k).map((b) => <BrandCard b={b} />)}</div>
+      </section>
+    ))}
+  </div>
+</Base>

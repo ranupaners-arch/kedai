@@ -1,0 +1,4 @@
+---
+const { title, text, cta = "Keep browsing", href = "/" } = Astro.props;
+---
+<div class="empty"><h2>{title}</h2><p>{text}</p><a class="btn-primary" href={href}>{cta}</a></div>

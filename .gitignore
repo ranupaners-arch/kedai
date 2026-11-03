@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+data/*.db*
+
+# Earlier static prototype (kept locally, not part of the Astro project)
+legacy-static/
