@@ -25,7 +25,7 @@ const sum = raw.reduce((a, c) => a + c, 0);
 const pct = raw.map((x) => Math.round((x / sum) * 100));
 const related = PRODUCTS.filter((x) => x.brand === b.id && x.id !== p.id);
 ---
-<Base title={`${p.name} — Shop`} description={p.desc}>
+<Base title={`${p.name} — Kedai`} description={p.desc}>
   <div class="container page pp" id="pdp" data-id={p.id} data-name={p.name} data-brand={b.id} data-brand-name={b.name}>
     <div class="pp__grid">
       <div class="pp__gallery">

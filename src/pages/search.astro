@@ -5,7 +5,7 @@ import BrandCard from "../components/BrandCard.astro";
 import Empty from "../components/Empty.astro";
 import { BRANDS, CATEGORIES, CATEGORY_KEYS, PRODUCTS, SORTS } from "../data/catalog";
 ---
-<Base title="Search — Shop" active="/search">
+<Base title="Search — Kedai" active="/search">
   <div class="container page" id="search-page">
     <h1 class="page__title" id="heading">Browse everything</h1>
     <div id="brandsBlock" hidden>
@@ -35,7 +35,7 @@ import { BRANDS, CATEGORIES, CATEGORY_KEYS, PRODUCTS, SORTS } from "../data/cata
     const state = { cat: "", sort: "featured" };
 
     $("#heading")!.textContent = q ? `Results for “${qs("q")!.trim()}”` : "Browse everything";
-    document.title = `${q ? `“${qs("q")!.trim()}” — ` : ""}Search — Shop`;
+    document.title = `${q ? `“${qs("q")!.trim()}” — ` : ""}Search — Kedai`;
 
     // relevance: every term must match; name matches weigh more
     const score = new Map<HTMLElement, number>();

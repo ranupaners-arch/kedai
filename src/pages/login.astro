@@ -1,14 +1,15 @@
 ---
 import Base from "../layouts/Base.astro";
 import Stars from "../components/Stars.astro";
+import LogoMark from "../components/LogoMark.astro";
 import { BRAND_BY_ID } from "../data/catalog";
 
 const cards = [["terra-co", 14, 22, -7], ["northfield", 38, 50, 5], ["oat-home", 12, 60, -3]] as const;
 ---
-<Base title="Log in to your account | Shop" bare>
+<Base title="Log in to your account | Kedai" bare>
   <main class="login">
     <aside class="login__art" aria-hidden="true">
-      <span class="login__tag">shop.</span>
+      <span class="login__tag">kedai.</span>
       {cards.map(([id, x, y, r]) => {
         const b = BRAND_BY_ID[id];
         return (
@@ -21,9 +22,9 @@ const cards = [["terra-co", 14, 22, -7], ["northfield", 38, 50, 5], ["oat-home",
 
     <section class="login__panel">
       <form class="login__form" id="loginForm" novalidate>
-        <a class="login__logo" href="/" aria-label="Back to the shop">shop<i>.</i></a>
+        <a class="login__logo" href="/" aria-label="Back to Kedai"><LogoMark size={44} /></a>
         <div class="login__head">
-          <h1 id="title">Sign in to Shop</h1>
+          <h1 id="title">Sign in to Kedai</h1>
           <p id="sub">Or create an account</p>
         </div>
 

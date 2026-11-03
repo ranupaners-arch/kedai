@@ -1074,3 +1074,8 @@ body:has(.login) { background: #fff; }
   .arc__card { padding-bottom: 5px; }
   .arc__stage { --rx: 44.5%; }          /* label-less cards are a little smaller, so their outer edge still lands on the shared line */
 }
+
+/* Kedai wordmark: ink-black letters, violet dot */
+.logo, .login__logo { color: var(--color-ink-black); }
+.logo i, .login__logo i, .footer__brand i { color: var(--color-shop-violet); }
+.login__logo { display: block; line-height: 0; }

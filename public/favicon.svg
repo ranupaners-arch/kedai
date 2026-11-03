@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Kedai">
+  <rect width="64" height="64" rx="16" fill="#5433EB"/>
+  <!-- stall awning with a scalloped edge -->
+  <path d="M15 17h34l5 11H10z" fill="#fff"/>
+  <path d="M10 28h44a7 7 0 0 1-14.67 0 7 7 0 0 1-14.66 0 7 7 0 0 1-14.67 0z" fill="#fff"/>
+  <!-- counter -->
+  <rect x="17" y="41" width="30" height="12" rx="3.5" fill="#fff" fill-opacity=".88"/>
+</svg>

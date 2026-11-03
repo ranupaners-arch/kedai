@@ -10,7 +10,7 @@ export function getStaticPaths() {
 const b = BRAND_BY_ID[Astro.params.id!];
 const list = PRODUCTS.filter((p) => p.brand === b.id);
 ---
-<Base title={`${b.name} — Shop`} description={b.tagline}>
+<Base title={`${b.name} — Kedai`} description={b.tagline}>
   <div class="container page" id="brand" data-id={b.id} data-name={b.name}>
     <header class="bhead">
       <button class="bhead__follow" id="follow" aria-pressed="false">Follow</button>

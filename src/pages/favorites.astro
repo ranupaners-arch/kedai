@@ -5,7 +5,7 @@ import BrandCard from "../components/BrandCard.astro";
 import Empty from "../components/Empty.astro";
 import { BRANDS, PRODUCTS } from "../data/catalog";
 ---
-<Base title="Favorites — Shop" active="/favorites">
+<Base title="Favorites — Kedai" active="/favorites">
   <div class="container page">
     <h1 class="page__title">Favorites</h1>
     <div class="pgrid" id="grid">{PRODUCTS.map((p) => <ProductCard p={p} />)}</div>

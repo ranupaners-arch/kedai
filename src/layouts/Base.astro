@@ -19,6 +19,7 @@ const userIcon = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" st
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <title>{title}</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <slot name="head" />
   </head>
   <body>
@@ -46,17 +47,17 @@ const userIcon = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" st
 
         <div class={`main ${isHome ? "" : "main--inner"}`}>
           <header class="topbar topbar--slim">
-            <a class="logo" href="/" aria-label="Shop home">shop<i>.</i></a>
+            <a class="logo" href="/" aria-label="Kedai home">kedai<i>.</i></a>
           </header>
           <slot />
           <footer class="footer"><div class="container">
             <div class="footer__cols">
-              <div><div class="footer__brand">shop<i>.</i></div><p class="footer__tag">Shopping designed around you.</p></div>
+              <div><div class="footer__brand">kedai<i>.</i></div><p class="footer__tag">Small shops, big finds.</p></div>
               <div><h4>Discover</h4><ul><li><a href="/brands">Brands</a></li>{CATEGORY_KEYS.slice(0, 3).map((k) => <li><a href={`/category/${k}`}>{CATEGORIES[k].label}</a></li>)}</ul></div>
               <div><h4>Account</h4><ul><li><a href="/account">Profile</a></li><li><a href="/orders">Orders</a></li><li><a href="/favorites">Favorites</a></li></ul></div>
               <div><h4>Support</h4><ul><li><a href="/help">Help center</a></li><li><a href="/help#returns">Returns</a></li><li><a href="/help#privacy">Privacy</a></li></ul></div>
             </div>
-            <p class="footer__legal">Demo storefront — no real payments or orders are processed. Catalog and brands are fictional.</p>
+            <p class="footer__legal">© 2026 Ranupane · KukerjainAja. Demo storefront — no real payments or orders are processed; brands and products are fictional.</p>
           </div></footer>
         </div>
 

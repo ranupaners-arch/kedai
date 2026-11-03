@@ -18,7 +18,7 @@ const err = (msg: string) => { const e = $("#err")!; e.hidden = !msg; e.textCont
 function show(s: typeof step) {
   step = s; err("");
   const second = s === "name";
-  $("#title")!.textContent = second ? "Create your account" : "Sign in to Shop";
+  $("#title")!.textContent = second ? "Create your account" : "Sign in to Kedai";
   $("#sub")!.textContent = second ? `No account yet for ${email.value.trim()}` : "Or create an account";
   $("#emailField")!.hidden = second;
   $("#nameField")!.hidden = !second;
