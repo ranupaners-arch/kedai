@@ -1,6 +1,8 @@
-# shop-web
+# Kedai
 
-A multi-page online storefront built with [Astro](https://astro.build) and SQLite. Product, brand and category pages are pre-rendered at build time; a small Node server handles the catalog and order API.
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+**Kedai** (Indonesian for a small shop or stall) is a multi-page online storefront built with [Astro](https://astro.build) and SQLite. Product, brand and category pages are pre-rendered at build time; a small Node server handles the catalog and order API.
 
 > **This is an independent demo project.** It is not affiliated with, endorsed by, or connected to Shopify or the Shop app. Brands, products, prices and ratings are fictional and generated in code. No real payments are taken and no orders are fulfilled.
 
@@ -29,8 +31,8 @@ A multi-page online storefront built with [Astro](https://astro.build) and SQLit
 **Requirements:** Node.js 22.18 or newer (built-in `node:sqlite` and native TypeScript support for the seed script). Developed and tested on Node 26.
 
 ```bash
-git clone https://github.com/ranupaners-arch/shop-web.git
-cd shop-web
+git clone https://github.com/ranupaners-arch/kedai.git
+cd kedai
 npm install
 
 npm run db:seed     # creates data/shop.db and loads the catalog (required for checkout)
@@ -103,8 +105,14 @@ public/images/         Static images (home hero background)
 - **Catalog:** edit `src/data/catalog.ts`, then run `npm run db:seed` and rebuild. For real data, replace the generator with a CMS or API.
 - **Photos:** set `image` on a product or brand (for example `"/images/linen-dress.jpg"`) and put the file in `public/images/`. Cards and thumbnails then use the photo instead of the colour block.
 - **Look and feel:** colours, radii and shadows are CSS variables at the top of `src/styles/global.css`.
-- **Name and logo:** the wordmark and titles currently read "shop." – change them before publishing a real site of your own.
+- **Name and logo:** "Kedai" and its logo mark (`public/favicon.svg`, `src/components/LogoMark.astro`) are original artwork by KukerjainAja. If you fork this to launch a shop of your own, swap in your own name and mark.
 
 ## Credits
 
-The home hero background is a photo by **MagicPattern** from [Unsplash](https://unsplash.com/photos/yellow-pink-and-blue-gradient-oPH_5xuMgQw), used under the [Unsplash License](https://unsplash.com/license). See [CREDITS.md](CREDITS.md).
+Made by **Ranupane** · **KukerjainAja**.
+
+The home hero background is a photo by **MagicPattern** from [Unsplash](https://unsplash.com/photos/yellow-pink-and-blue-gradient-oPH_5xuMgQw), used under the [Unsplash License](https://unsplash.com/license). The Inter typeface is licensed under the SIL Open Font License 1.1. Details are in [CREDITS.md](CREDITS.md).
+
+## License
+
+The source code, the Kedai name and the logo are released under the [MIT License](LICENSE) — © 2026 Ranupane (KukerjainAja). Third-party material listed in [CREDITS.md](CREDITS.md) keeps its own license.

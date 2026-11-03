@@ -1,8 +1,19 @@
 {
-  "name": "shop-web",
-  "type": "module",
+  "name": "kedai",
   "version": "1.0.0",
+  "description": "Kedai - a small-shops storefront demo built with Astro and SQLite",
+  "author": "Ranupane (KukerjainAja)",
+  "license": "MIT",
   "private": true,
+  "type": "module",
+  "homepage": "https://github.com/ranupaners-arch/kedai#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ranupaners-arch/kedai.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ranupaners-arch/kedai/issues"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
