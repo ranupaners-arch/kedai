@@ -5,10 +5,11 @@ const root = $("#root")!;
 function render() {
   const u = user.get();
   if (!u) { location.replace("/login?next=/account"); return; }
+  const greetingName = u.name.includes("@") ? u.name.split("@")[0] : u.name.trim().split(/\s+/)[0];
 
   const a = store.get<Address>("address", {}), orders = store.get<Order[]>("orders", []);
   root.innerHTML = `
-    <h1 class="page__title">Hi, ${esc(u.name.split(" ")[0])}</h1>
+    <h1 class="page__title">Hi, ${esc(greetingName)}</h1>
     <div class="stats">
       <a href="/orders"><strong>${orders.length}</strong> Orders</a>
       <a href="/favorites"><strong>${favs.list().length}</strong> Favorites</a>

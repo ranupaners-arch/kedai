@@ -157,7 +157,8 @@ img, svg { display: block; }
 .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 .tile {
   position: relative; aspect-ratio: 3 / 4; border-radius: var(--radius-card); overflow: hidden;
-  display: block; transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1);
+  display: block; background-size: cover; background-position: center;
+  transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 .tile:hover { transform: translateY(-4px); }
 .tile__label {
@@ -169,7 +170,7 @@ img, svg { display: block; }
 .split { display: grid; grid-template-columns: 3fr 2fr; gap: 12px; }
 .split__hero {
   position: relative; border-radius: var(--radius-card); overflow: hidden; min-height: 520px;
-  padding: 28px; color: #fff; display: block;
+  padding: 28px; color: #fff; display: block; background-size: cover; background-position: center;
 }
 .split__hero h3 { font-size: 40px; line-height: 1.1; font-weight: 600; letter-spacing: -0.05em; }
 .split__hero .stars { color: #fff; margin: 10px 0 0; font-size: 14px; letter-spacing: -0.014em; }
@@ -501,11 +502,13 @@ body { background: #fbfbfb; }
 .rail__item svg { stroke-width: 1.8; }
 .rail__badge { top: 2px; right: 0; }
 .rail__signin {
-  width: 48px; padding: 4px 0 6px; display: grid; justify-items: center; gap: 2px; border-radius: 24px;
+  width: 48px; min-width: 0; grid-template-columns: minmax(0, 1fr); padding: 4px 0 6px;
+  display: grid; justify-items: center; gap: 2px; border-radius: 24px; overflow: hidden; box-sizing: border-box;
   font-size: 10px; letter-spacing: -0.017em; color: var(--color-muted-gray);
 }
 .rail__signin:hover { background: var(--color-canvas-mist); }
-.rail__signin-icon { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; }
+.rail__signin-icon { grid-column: 1; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; }
+.rail__signin #avatarLabel { display: block; grid-column: 1; width: 100%; min-width: 0; overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap; line-height: 12px; }
 .rail__signin.has-user .rail__signin-icon { background: var(--color-shop-violet); color: #fff; font-size: 13px; }
 
 /* top bar: logo left, pill search centered */
@@ -532,7 +535,7 @@ body { background: #fbfbfb; }
 /* hero carousel */
 .home { padding: 0 48px; }
 .hero2 { position: relative; margin-top: 16px; height: 440px; border-radius: 32px; overflow: hidden; color: #fff; }
-.slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 32px; opacity: 0; transition: opacity 0.5s; pointer-events: none; }
+.slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 32px; opacity: 0; transition: opacity 0.5s; pointer-events: none; background-size: cover; background-position: center; }
 .slide.on { opacity: 1; pointer-events: auto; }
 .slide::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.35), transparent 55%); z-index: 0; }
 .slide > * { position: relative; z-index: 1; }
@@ -651,9 +654,9 @@ body:has(.login) { background: #fff; }
 .pp__grid { display: grid; grid-template-columns: minmax(0, 1fr) 464px; gap: 44px; align-items: start; }
 .pp__gallery { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 20px; align-items: start; }
 .pp__thumbs { display: grid; gap: 8px; padding-top: 24px; }
-.pp__thumb { width: 48px; height: 48px; border-radius: 8px; border: 0; outline: 2px solid transparent; outline-offset: 2px; transition: outline-color .15s; }
+.pp__thumb { width: 48px; height: 48px; border-radius: 8px; border: 0; background-size: cover; background-position: center; outline: 2px solid transparent; outline-offset: 2px; transition: outline-color .15s; }
 .pp__thumb[aria-pressed="true"] { outline-color: var(--color-ink-black); }
-.pp__main { aspect-ratio: 1; border-radius: 28px; width: 100%; max-width: 656px; position: sticky; top: 24px; }
+.pp__main { aspect-ratio: 1; border-radius: 28px; width: 100%; max-width: 656px; position: sticky; top: 24px; background-size: cover; background-position: center; }
 
 .pp__info { min-width: 0; }
 .pp__brandrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -767,6 +770,9 @@ body:has(.login) { background: #fff; }
 .fsearch { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); width: min(512px, calc(100vw - 200px)); z-index: 25; }
 .fsearch .search { box-shadow: var(--shadow-lg); }
 .fsearch .search:focus-within { box-shadow: 0 0 0 2px var(--color-shop-violet), var(--shadow-lg); }
+.fsearch--home { visibility: hidden; opacity: 0; pointer-events: none; transform: translate(-50%, 12px); transition: opacity .18s ease, transform .18s ease, visibility 0s linear .18s; }
+.fsearch--home.is-visible { visibility: visible; opacity: 1; pointer-events: auto; transform: translate(-50%, 0); transition-delay: 0s; }
+@media (prefers-reduced-motion: reduce) { .fsearch--home { transition: none; } }
 .main--inner { padding-bottom: 0; }
 .main--inner .page { padding-bottom: 120px; }
 
@@ -1079,3 +1085,17 @@ body:has(.login) { background: #fff; }
 .logo, .login__logo { color: var(--color-ink-black); }
 .logo i, .login__logo i, .footer__brand i { color: var(--color-shop-violet); }
 .login__logo { display: block; line-height: 0; }
+
+/* On short pages, keep the shared footer at the bottom of the viewport. */
+.main { display: flex; flex-direction: column; min-height: 100dvh; }
+.main > .footer { margin-top: auto; }
+.main > :not(.footer) { min-width: 0; }
+.main > .container, .main > .home { width: 100%; }
+@media (max-width: 640px) {
+  .rail-group { right: auto; width: 100dvw; max-width: 100dvw; }
+  .page__title { overflow-wrap: anywhere; text-wrap: balance; }
+  .fsearch { transition: opacity .18s ease, transform .18s ease, visibility 0s linear .18s; }
+  .fsearch.is-mobile-hidden { visibility: hidden; opacity: 0; pointer-events: none; transform: translate(-50%, 12px); }
+  body:has(.main input:focus, .main select:focus, .main textarea:focus, .main [contenteditable="true"]:focus) .fsearch { visibility: hidden; opacity: 0; pointer-events: none; transform: translate(-50%, 12px); }
+  html { scroll-padding-block: 72px 144px; }
+}

@@ -13,14 +13,44 @@ function sync() {
   if (av) {
     av.classList.toggle("has-user", !!u);
     (av as HTMLAnchorElement).href = u ? "/account" : "/login";
+    (av as HTMLAnchorElement).title = u?.email ?? "Sign in";
     $("#avatarIcon")!.innerHTML = u ? esc(u.name[0].toUpperCase()) : av.dataset.icon!;
-    $("#avatarLabel")!.textContent = u ? u.name.split(" ")[0] : "Sign in";
+    $("#avatarLabel")!.textContent = u ? "Account" : "Sign in";
   }
 }
 
 sync();
 document.addEventListener("shop:change", sync);
 window.addEventListener("storage", sync);
+
+const floatingSearch = $<HTMLElement>(".fsearch");
+const footer = $(".footer");
+if (floatingSearch && footer && !floatingSearch.classList.contains("fsearch--home") && matchMedia("(max-width: 640px)").matches && "IntersectionObserver" in window) {
+  let footerInView = false;
+  let editingControl = false;
+  const updateFloatingSearch = () => {
+    const hidden = footerInView || editingControl;
+    floatingSearch.classList.toggle("is-mobile-hidden", hidden);
+    floatingSearch.setAttribute("aria-hidden", String(hidden));
+    floatingSearch.inert = hidden;
+  };
+  const footerObserver = new IntersectionObserver(([entry]) => {
+    footerInView = entry.isIntersecting;
+    updateFloatingSearch();
+  }, { threshold: 0.01 });
+  footerObserver.observe(footer);
+  document.addEventListener("focusin", (event) => {
+    const target = event.target as HTMLElement;
+    if (target.closest(".fsearch")) return;
+    editingControl = !!target.closest("input, select, textarea, [contenteditable='true']");
+    updateFloatingSearch();
+  });
+  document.addEventListener("focusout", () => window.setTimeout(() => {
+    const target = document.activeElement as HTMLElement | null;
+    editingControl = !!target?.matches("input, select, textarea, [contenteditable='true']") && !target.closest(".fsearch");
+    updateFloatingSearch();
+  }, 0));
+}
 
 const dl = $("#dl");
 if (dl && !store.get("dl-dismissed", false)) dl.hidden = false;

@@ -1,4 +1,4 @@
 ---
-const { label, ph, href } = Astro.props;
+const { label, ph, href, image } = Astro.props;
 ---
-<a href={href} class={`tile ${ph}`}><span class="tile__label">{label}</span></a>
+<a href={href} class={`tile ${ph}`} style={image ? `background-image:linear-gradient(0deg,rgba(0,0,0,.42),rgba(0,0,0,.02) 68%),url('${image}')` : undefined}><span class="tile__label">{label}</span></a>

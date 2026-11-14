@@ -42,6 +42,12 @@ export interface Product {
   image?: string;
 }
 
+// Category matched photos for the generated demo catalog.
+export const CATEGORY_IMAGES: Record<CategoryKey, string> = {
+  women: "/images/women.jpg", men: "/images/women.jpg", beauty: "/images/beauty.jpg",
+  home: "/images/home.jpg", baby: "/images/baby.jpg", tech: "/images/tech.jpg", food: "/images/food.jpg",
+};
+
 export const CATEGORIES: Record<CategoryKey, Category> = {
   women: { label: "Women", color: "#e0457b", icon: "women", types: [["Dresses", "Dress"], ["Knitwear", "Sweater"], ["Shoes", "Leather Flats"], ["Bags", "Shoulder Bag"]], options: ["XS", "S", "M", "L", "XL"] },
   men: { label: "Men", color: "#2f6fed", icon: "men", types: [["Jackets", "Jacket"], ["Denim", "Jeans"], ["Sneakers", "Sneakers"], ["Watches", "Watch"]], options: ["S", "M", "L", "XL"] },
@@ -97,7 +103,7 @@ export function mulberry(a: number) {
 
 export const BRANDS: Brand[] = BRAND_SEED.map(([id, name, cat, ph, tagline], i) => {
   const r = mulberry(i * 31 + 7);
-  return { id, name, cat, ph, tagline, rating: (4.4 + r() * 0.5).toFixed(1), reviews: Math.round(300 + r() * 4500) };
+  return { id, name, cat, ph, tagline, rating: (4.4 + r() * 0.5).toFixed(1), reviews: Math.round(300 + r() * 4500), image: CATEGORY_IMAGES[cat] };
 });
 export const BRAND_BY_ID: Record<string, Brand> = Object.fromEntries(BRANDS.map((b) => [b.id, b]));
 
@@ -126,6 +132,9 @@ BRANDS.forEach((b, bi) => {
         alt: [0, 1, 2].map(() => PHS[Math.floor(r() * PHS.length)]),
         desc: DESC[Math.floor(r() * DESC.length)],
         isNew: r() > 0.8,
+        // A stable per-SKU seed gives every demo product a different photograph.
+        // The URL seed contains the product's type and generated name for repeatability.
+        image: `https://picsum.photos/seed/${encodeURIComponent(`${b.name.split(/[ &]/)[0]}-${adj}-${singular}-${b.id}-${k}`)}/1200/1200`,
       });
     }
   });

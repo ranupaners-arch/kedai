@@ -10,12 +10,12 @@ import Icon from "../components/Icon.astro";
 import SearchForm from "../components/SearchForm.astro";
 import Thumb from "../components/Thumb.astro";
 import { ICON } from "../data/icons";
-import { BRANDS, BRAND_BY_ID, CATEGORIES, CATEGORY_KEYS, PRODUCTS } from "../data/catalog";
+import { BRANDS, BRAND_BY_ID, CATEGORIES, CATEGORY_IMAGES, CATEGORY_KEYS, PRODUCTS } from "../data/catalog";
 
 const slides = [
-  { ph: "ph-terra", title: "The Linen Edit", text: "Light layers and easy silhouettes for warmer days.", cta: "Shop women", href: "/category/women" },
-  { ph: "ph-olive", title: "Coffee, Slowly", text: "Single-origin beans and tea worth a second cup.", cta: "Shop food & drink", href: "/category/food" },
-  { ph: "ph-slate", title: "Built for Weather", text: "Outerwear and boots from brands that last.", cta: "Shop men", href: "/category/men" },
+  { ph: "ph-terra", image: CATEGORY_IMAGES.women, title: "The Linen Edit", text: "Light layers and easy silhouettes for warmer days.", cta: "Shop women", href: "/category/women" },
+  { ph: "ph-olive", image: CATEGORY_IMAGES.food, title: "Coffee, Slowly", text: "Single-origin beans and tea worth a second cup.", cta: "Shop food & drink", href: "/category/food" },
+  { ph: "ph-slate", image: CATEGORY_IMAGES.men, title: "Built for Weather", text: "Outerwear and boots from brands that last.", cta: "Shop men", href: "/category/men" },
 ];
 const trending = ["roast-society", "terra-co", "northfield", "oat-home", "aurelia", "orbit-audio", "little-fern"].map((id) => BRAND_BY_ID[id]);
 const light = new Set(["ph-ivory", "ph-sand", "ph-tan"]);
@@ -72,7 +72,7 @@ const fresh = PRODUCTS.filter((p) => p.isNew).slice(0, 10);
   <div class="home">
     <section class="hero2" id="hero" aria-roledescription="carousel" aria-label="Featured shops">
       {slides.map((s, i) => (
-        <div class={`slide ${s.ph} ${i === 0 ? "on" : ""}`} aria-hidden={i === 0 ? "false" : "true"}>
+        <div class={`slide ${s.ph} ${i === 0 ? "on" : ""}`} style={`background-image:linear-gradient(0deg,rgba(0,0,0,.42),rgba(0,0,0,.02) 68%),url('${s.image}')`} aria-hidden={i === 0 ? "false" : "true"}>
           <h2>{s.title}</h2><p>{s.text}</p>
           <a class="slide__cta" href={s.href}>{s.cta}</a>
         </div>
@@ -98,20 +98,20 @@ const fresh = PRODUCTS.filter((p) => p.isNew).slice(0, 10);
 
     <section class="section">
       <SectionHead title="Women" href="/category/women" />
-      <div class="grid-4">{CATEGORIES.women.types.map(([t], i) => <Tile label={t} ph={tilePh[i]} href={`/category/women?t=${encodeURIComponent(t)}`} />)}</div>
+      <div class="grid-4">{CATEGORIES.women.types.map(([t], i) => <Tile label={t} image={CATEGORY_IMAGES.women} ph={tilePh[i]} href={`/category/women?t=${encodeURIComponent(t)}`} />)}</div>
     </section>
 
     <section class="section">
       <SectionHead title="Men" href="/category/men" />
       <div class="split">
-        <a href={`/brand/${hero.id}`} class="split__hero ph-slate"><h3>{hero.name}</h3><Stars rating={hero.rating} count={hero.reviews} /></a>
-        <div class="split__grid">{CATEGORIES.men.types.map(([t], i) => <Tile label={t} ph={["ph-olive", "ph-ash", "ph-sand", "ph-black"][i]} href={`/category/men?t=${encodeURIComponent(t)}`} />)}</div>
+        <a href={`/brand/${hero.id}`} class="split__hero ph-slate" style={`background-image:linear-gradient(0deg,rgba(0,0,0,.42),rgba(0,0,0,.02) 68%),url('${CATEGORY_IMAGES.men}')`}><h3>{hero.name}</h3><Stars rating={hero.rating} count={hero.reviews} /></a>
+        <div class="split__grid">{CATEGORIES.men.types.map(([t], i) => <Tile label={t} image={CATEGORY_IMAGES.men} ph={["ph-olive", "ph-ash", "ph-sand", "ph-black"][i]} href={`/category/men?t=${encodeURIComponent(t)}`} />)}</div>
       </div>
     </section>
 
     <section class="section">
       <SectionHead title="Beauty" href="/category/beauty" />
-      <div class="grid-4">{CATEGORIES.beauty.types.map(([t], i) => <Tile label={t} ph={["ph-rose", "ph-sand", "ph-terra", "ph-sage"][i]} href={`/category/beauty?t=${encodeURIComponent(t)}`} />)}</div>
+      <div class="grid-4">{CATEGORIES.beauty.types.map(([t], i) => <Tile label={t} image={CATEGORY_IMAGES.beauty} ph={["ph-rose", "ph-sand", "ph-terra", "ph-sage"][i]} href={`/category/beauty?t=${encodeURIComponent(t)}`} />)}</div>
     </section>
 
     <section class="section">
@@ -121,7 +121,7 @@ const fresh = PRODUCTS.filter((p) => p.isNew).slice(0, 10);
 
     <section class="section">
       <SectionHead title="Baby & Toddler" href="/category/baby" />
-      <div class="grid-4">{CATEGORIES.baby.types.map(([t], i) => <Tile label={t} ph={["ph-ivory", "ph-sage", "ph-rose", "ph-sand"][i]} href={`/category/baby?t=${encodeURIComponent(t)}`} />)}</div>
+      <div class="grid-4">{CATEGORIES.baby.types.map(([t], i) => <Tile label={t} image={CATEGORY_IMAGES.baby} ph={["ph-ivory", "ph-sage", "ph-rose", "ph-sand"][i]} href={`/category/baby?t=${encodeURIComponent(t)}`} />)}</div>
     </section>
 
     <section class="section">
@@ -131,6 +131,30 @@ const fresh = PRODUCTS.filter((p) => p.isNew).slice(0, 10);
   </div>
 
   <script>
+    const heroSearch = document.querySelector<HTMLElement>(".arc__search");
+    const floatingSearch = document.querySelector<HTMLElement>(".fsearch--home");
+    const pageFooter = document.querySelector<HTMLElement>(".footer");
+    if (heroSearch && floatingSearch && pageFooter && "IntersectionObserver" in window) {
+      let heroInView = heroSearch.getBoundingClientRect().bottom > 0 && heroSearch.getBoundingClientRect().top < innerHeight;
+      let footerInView = false;
+      const updateStickySearch = () => {
+        const visible = !heroInView && !footerInView;
+        floatingSearch.classList.toggle("is-visible", visible);
+        floatingSearch.setAttribute("aria-hidden", String(!visible));
+        floatingSearch.inert = !visible;
+      };
+      const observer = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (entry.target === heroSearch) heroInView = entry.isIntersecting;
+          if (entry.target === pageFooter) footerInView = entry.isIntersecting;
+        }
+        updateStickySearch();
+      }, { threshold: 0.01 });
+      observer.observe(heroSearch);
+      observer.observe(pageFooter);
+      updateStickySearch();
+    }
+
     const slides = [...document.querySelectorAll<HTMLElement>(".slide")];
     const dots = [...document.querySelectorAll<HTMLElement>("[data-slide]")];
     let i = 0, timer: number | undefined;

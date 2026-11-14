@@ -5,7 +5,7 @@ import Stars from "../../components/Stars.astro";
 import Row from "../../components/Row.astro";
 import ProductCard from "../../components/ProductCard.astro";
 import { ICON, STAR_SVG } from "../../data/icons";
-import { BRAND_BY_ID, CATEGORIES, PRODUCTS, PRODUCT_BY_ID, highlightsFor, mulberry, money, percentOff } from "../../data/catalog";
+import { BRAND_BY_ID, CATEGORIES, CATEGORY_IMAGES, PRODUCTS, PRODUCT_BY_ID, highlightsFor, mulberry, money, percentOff } from "../../data/catalog";
 
 export function getStaticPaths() {
   return PRODUCTS.map((p) => ({ params: { id: p.id } }));
@@ -31,9 +31,9 @@ const related = PRODUCTS.filter((x) => x.brand === b.id && x.id !== p.id);
       <div class="pp__gallery">
         <div class="pp__sticky">
           <div class="pp__thumbs">
-            {gallery.map((g, i) => <button class={`pp__thumb ${g}`} data-img={g} aria-label={`Image ${i + 1}`} aria-pressed={i === 0 ? "true" : "false"}></button>)}
+            {gallery.map((g, i) => <button class={`pp__thumb ${g}`} style={`background-image:url('${i === 0 ? p.image : CATEGORY_IMAGES[p.cat]}')`} data-img={g} aria-label={`Image ${i + 1}`} aria-pressed={i === 0 ? "true" : "false"}></button>)}
           </div>
-          <div class={`pp__main ${gallery[0]}`} id="main" role="img" aria-label={p.name}></div>
+          <div class={`pp__main ${gallery[0]}`} id="main" style={`background-image:url('${p.image}')`} role="img" aria-label={p.name}></div>
         </div>
       </div>
 
@@ -142,7 +142,7 @@ const related = PRODUCTS.filter((x) => x.brand === b.id && x.id !== p.id);
       const t = e.target as HTMLElement;
 
       const im = t.closest<HTMLElement>("[data-img]");
-      if (im) { main.className = `pp__main ${im.dataset.img}`; $$("[data-img]").forEach((x) => x.setAttribute("aria-pressed", String(x === im))); }
+      if (im) { main.className = `pp__main ${im.dataset.img}`; main.style.backgroundImage = (im as HTMLElement).style.backgroundImage; $$("[data-img]").forEach((x) => x.setAttribute("aria-pressed", String(x === im))); }
 
       const o = t.closest<HTMLElement>("[data-opt]");
       if (o) { opt = o.dataset.opt; $$("[data-opt]").forEach((x) => x.setAttribute("aria-pressed", String(x === o))); }

@@ -61,7 +61,11 @@ const userIcon = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" st
           </div></footer>
         </div>
 
-        {!isHome && <div class="fsearch"><SearchForm /></div>}
+        {isHome ? (
+          <div class="fsearch fsearch--home" aria-hidden="true" inert><SearchForm /></div>
+        ) : (
+          <div class="fsearch"><SearchForm /></div>
+        )}
 
         <aside class="dl-card" id="dl" hidden>
           <a class="dl-card__body" href="/help#app">
